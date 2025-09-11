@@ -1,0 +1,6 @@
+- include_tasks:
+    file: database.yml
+    apply:
+      tags:
+        - crep.database
+  tags: always
