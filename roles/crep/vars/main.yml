@@ -1,0 +1,1 @@
+keybase_secrets: "{{ lookup('file', '/keybase/team/cepro_crep/secrets-prod.yml') | from_yaml }}"

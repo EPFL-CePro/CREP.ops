@@ -1,4 +1,80 @@
 ---
-- name: Hello world
-  ansible.builtin.debug:
-    msg: Hello! Working
+- name: Create `crep` table if not exists
+  community.mysql.mysql_query:
+    login_db: "{{ keybase_secrets.mysql.database }}"
+    login_user: "{{ keybase_secrets.mysql.user }}"
+    login_password: "{{ keybase_secrets.mysql.password }}"
+    query: CREATE TABLE IF NOT EXISTS crep LIKE exam;
+- name: Insert all data from table `exam` into table `crep`
+  community.mysql.mysql_query:
+    login_db: "{{ keybase_secrets.mysql.database }}"
+    login_user: "{{ keybase_secrets.mysql.user }}"
+    login_password: "{{ keybase_secrets.mysql.password }}"
+    query: INSERT IGNORE INTO crep
+      (id, code, name, service_level_id, service_id, exam_type_id, exam_status_id, exam_date, academic_year_id, exam_semester,
+      nb_students, nb_pages, total_pages, deadline_prep, deadline_repro, remark, section_id, responsible_id)
+      SELECT id, code, name, service_level_id, service_id, exam_type_id, exam_status_id, exam_date, academic_year_id, exam_semester,
+      nb_students, nb_pages, total_pages, deadline_prep, deadline_repro, remark, section_id, responsible_id
+      FROM exam;
+- name: Add column `crep_print_date` to table `crep`
+  community.mysql.mysql_query:
+    login_db: "{{ keybase_secrets.mysql.database }}"
+    login_user: "{{ keybase_secrets.mysql.user }}"
+    login_password: "{{ keybase_secrets.mysql.password }}"
+    query: ALTER TABLE crep ADD crep_print_date DATE;
+  ignore_errors: true
+- name: Add column `crep_remark` to table `crep`
+  community.mysql.mysql_query:
+    login_db: "{{ keybase_secrets.mysql.database }}"
+    login_user: "{{ keybase_secrets.mysql.user }}"
+    login_password: "{{ keybase_secrets.mysql.password }}"
+    query: ALTER TABLE crep ADD crep_remark MEDIUMTEXT;
+  ignore_errors: true
+- name: Create trigger `exam_insert`
+  community.mysql.mysql_query:
+    login_db: "{{ keybase_secrets.mysql.database }}"
+    login_user: "{{ keybase_secrets.mysql.user }}"
+    login_password: "{{ keybase_secrets.mysql.password }}"
+    query: CREATE TRIGGER IF NOT EXISTS `exam_insert` AFTER INSERT ON `exam`
+      FOR EACH ROW
+      INSERT INTO crep (id, code, name, service_level_id, service_id, exam_type_id, exam_status_id, exam_date, academic_year_id, exam_semester,
+      nb_students, nb_pages, total_pages, deadline_prep, deadline_repro, remark, section_id, responsible_id)
+      SELECT id, code, name, service_level_id, service_id, exam_type_id, exam_status_id, exam_date, academic_year_id, exam_semester,
+      nb_students, nb_pages, total_pages, deadline_prep, deadline_repro, remark, section_id, responsible_id
+      FROM exam WHERE id = NEW.id;
+- name: Create trigger `exam_update`
+  community.mysql.mysql_query:
+    login_db: "{{ keybase_secrets.mysql.database }}"
+    login_user: "{{ keybase_secrets.mysql.user }}"
+    login_password: "{{ keybase_secrets.mysql.password }}"
+    query: CREATE TRIGGER IF NOT EXISTS `exam_update` AFTER UPDATE ON `exam`
+      FOR EACH ROW
+          UPDATE crep
+          SET
+              code = NEW.code,
+              name = NEW.name,
+              service_level_id = NEW.service_level_id,
+              service_id = NEW.service_id,
+              exam_type_id = NEW.exam_type_id,
+              exam_status_id = NEW.exam_status_id,
+              exam_date = NEW.exam_date,
+              academic_year_id = NEW.academic_year_id,
+              exam_semester = NEW.exam_semester,
+              nb_students = NEW.nb_students,
+              nb_pages = NEW.nb_pages,
+              total_pages = NEW.total_pages,
+              deadline_prep = NEW.deadline_prep,
+              deadline_repro = NEW.deadline_repro,
+              remark = NEW.remark,
+              section_id = NEW.section_id,
+              responsible_id = NEW.responsible_id
+          WHERE id = NEW.id;
+- name: Create trigger `exam_delete`
+  community.mysql.mysql_query:
+    login_db: "{{ keybase_secrets.mysql.database }}"
+    login_user: "{{ keybase_secrets.mysql.user }}"
+    login_password: "{{ keybase_secrets.mysql.password }}"
+    query: CREATE TRIGGER IF NOT EXISTS `exam_delete` AFTER DELETE ON `exam`
+      FOR EACH ROW
+          DELETE FROM crep
+          WHERE id = OLD.id;
