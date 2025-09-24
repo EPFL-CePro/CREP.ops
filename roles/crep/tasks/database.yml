@@ -30,6 +30,13 @@
     login_password: "{{ keybase_secrets.mysql.password }}"
     query: ALTER TABLE crep ADD crep_remark MEDIUMTEXT;
   ignore_errors: true
+- name: Add column `crep_status` to table `crep`
+  community.mysql.mysql_query:
+    login_db: "{{ keybase_secrets.mysql.database }}"
+    login_user: "{{ keybase_secrets.mysql.user }}"
+    login_password: "{{ keybase_secrets.mysql.password }}"
+    query: ALTER TABLE crep ADD crep_status VARCHAR(30) DEFAULT 'registered';
+  ignore_errors: true
 - name: Create trigger `exam_insert`
   community.mysql.mysql_query:
     login_db: "{{ keybase_secrets.mysql.database }}"
