@@ -21,7 +21,7 @@
     login_db: "{{ keybase_secrets.mysql.database }}"
     login_user: "{{ keybase_secrets.mysql.user }}"
     login_password: "{{ keybase_secrets.mysql.password }}"
-    query: ALTER TABLE crep ADD crep_print_date DATE;
+    query: ALTER TABLE crep ADD crep_print_date DATETIME;
   ignore_errors: true
 - name: Add column `crep_remark` to table `crep`
   community.mysql.mysql_query:
