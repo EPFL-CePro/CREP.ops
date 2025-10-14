@@ -1,0 +1,4 @@
+all:
+  hosts:
+    examsmgt-dev:
+      inventory_environment: test

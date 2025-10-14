@@ -45,8 +45,11 @@ platform_check () {
     export ANSIBLE_COLLECTIONS_PATHS="$PWD/ansible-deps-cache"
 }
 
-inventory_mode="prod"
+inventory_mode="test"
 inventories () {
+    case "$inventory_mode" in
+        *test*) echo "-i inventory/test.yml -e inventory_mode=test" ;;
+    esac
     case "$inventory_mode" in
         *prod*) echo "-i inventory/prod.yml -e inventory_mode=prod" ;;
     esac
