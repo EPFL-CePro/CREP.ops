@@ -1,0 +1,44 @@
+- name: Enable required Apache proxy modules
+  ansible.builtin.shell: |
+    a2enmod proxy
+    a2enmod proxy_http
+    a2enmod headers
+    a2enmod rewrite
+  args:
+    warn: false
+
+- name: Ensure Apache certs repository exists
+  file:
+    state: directory
+    path: "{{ item }}"
+    mode: '0755'
+  with_items:
+   - /etc/ssl/
+   - /etc/ssl/certs/
+   - /etc/ssl/certs/crep/
+
+- name: Copy certs to /etc/ssl/certs/crep from Keybase
+  copy:
+    src: "{{ item }}"
+    dest: /etc/ssl/certs/crep/
+    owner: root
+    mode: 600
+  with_fileglob:
+    - "/keybase/team/cepro_crep/crep-serveur.key"
+    - "/keybase/team/cepro_crep/DigiCertCA.crt"
+    - "/keybase/team/cepro_crep/crep_epfl_ch-crt.pem"
+
+- name: Create Apache virtual host configuration
+  ansible.builtin.template:
+    src: crep.conf.j2
+    dest: /etc/apache2/sites-available/crep.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable CREP site and reload Apache
+  ansible.builtin.shell: |
+    systemctl reload apache2
+    a2ensite crep.conf
+  args:
+    warn: false

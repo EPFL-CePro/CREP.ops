@@ -1,6 +1,27 @@
 - include_tasks:
+    file: setup.yml
+    apply:
+      tags:
+        - crep.setup
+  tags: always
+
+- include_tasks:
     file: database.yml
     apply:
       tags:
         - crep.database
+  tags: always
+
+- include_tasks:
+    file: run.yml
+    apply:
+      tags:
+        - crep.run
+  tags: always
+
+- include_tasks:
+    file: apache.yml
+    apply:
+      tags:
+        - crep.apache
   tags: always

@@ -1,0 +1,44 @@
+- name: Install Docker
+  apt:
+    name: docker.io
+    state: latest
+    update_cache: true
+
+- name: Install NodeJS
+  apt:
+    name: nodejs
+    state: latest
+    update_cache: true
+
+- name: Install NPM
+  apt:
+    name: npm
+    state: latest
+    update_cache: true
+
+- name: Install Docker Compose
+  apt:
+    name: docker-compose-v2
+    state: latest
+    update_cache: true
+
+- name: Install pip
+  apt:
+    name: python3-pip
+    state: latest
+    update_cache: true
+
+- name: Install Docker Python package
+  ansible.builtin.pip:
+    name: docker
+
+- name: Install Git
+  apt:
+    name: git
+    state: latest
+    update_cache: true
+
+- name: Install pymysql
+  pip:
+    name: pymysql
+    state: present

@@ -1,0 +1,38 @@
+- name: Ensure that CREP repository is present and up to date
+  git:
+    repo: 'https://github.com/epfl-cepro/crep'
+    dest: /var/www/html/crep
+    version: "main"
+    force: yes
+
+- name: "Copy env secrets from keybase ({{ inventory_mode }})"
+  copy:
+    src: "/keybase/team/cepro_crep/secrets-{{ inventory_mode }}.env"
+    dest: /var/www/html/crep/.env
+
+- name: Create Docker network
+  ansible.builtin.docker_network:
+    name: crep-network
+
+- name: Build CREP image
+  community.docker.docker_image:
+    name: crep
+    source: build
+    force_source: yes
+    build:
+      path: /var/www/html/crep
+
+- name: Create Docker CREP
+  ansible.builtin.docker_container:
+    name: crep-app
+    image: crep
+    state: started
+    ports:
+      - "3000:3000"
+    networks:
+      - name: crep-network
+        aliases:
+          - nextjs
+    env:
+      NODE_ENV: production
+    env_file: /var/www/html/crep/.env
