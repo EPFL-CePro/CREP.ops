@@ -23,7 +23,7 @@
     login_user: "{{ keybase_secrets.mysql.user }}"
     login_password: "{{ keybase_secrets.mysql.password }}"
     query: ALTER TABLE `crep` ADD PRIMARY KEY (`id`);
-  ignore_errors: true
+  ignore_errors: true # Will fail if already done, so we can ignore the error
 
 - name: Alter table `crep` modify not null auto increment
   community.mysql.mysql_query:
