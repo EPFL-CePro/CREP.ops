@@ -14,7 +14,13 @@
         `print_date` datetime NOT NULL,
         `remark` mediumtext,
         `repro_remark` mediumtext,
-        `exam_date` date NOT NULL
+        `exam_date` date NOT NULL,
+        `paper_format` varchar(2) NOT NULL,
+        `paper_color` varchar(10) NOT NULL,
+        `contact` varchar(256) NOT NULL,
+        `authorized_persons` MEDIUMTEXT NOT NULL,
+        `registered_by` varchar(256) NOT NULL,
+        `need_scan` BOOLEAN NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 - name: Alter table `crep` add primary key
