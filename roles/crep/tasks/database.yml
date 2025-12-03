@@ -6,7 +6,7 @@
     login_password: "{{ keybase_secrets.mysql.password }}"
     query: CREATE TABLE IF NOT EXISTS `crep` (
         `id` int NOT NULL,
-        `exam_name` varchar(64) NOT NULL,
+        `exam_name` varchar(128) NOT NULL,
         `exam_code` varchar(24) NOT NULL,
         `exam_pages` int NOT NULL,
         `exam_students` int NOT NULL,
